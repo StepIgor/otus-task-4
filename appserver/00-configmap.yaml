@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nodejsapp-config
+data:
+  DB_HOST: "postgresql.default.svc.cluster.local"
+  APP_PORT: "8080"
