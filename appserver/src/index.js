@@ -1,9 +1,40 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const { Pool } = require("pg");
+const prom = require("prom-client");
 
 const app = express();
 app.use(bodyParser.json());
+
+// Prometheus
+const collectDefaultMetrics = prom.collectDefaultMetrics;
+collectDefaultMetrics(); // Сбор базовых метрик (CPU, память и т.д.)
+
+// Создаем метрики
+const httpRequestDurationMicroseconds = new prom.Histogram({
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
+  buckets: [0.1, 0.5, 0.9, 1, 2, 5], // Квантили 0.5, 0.95, 0.99 будут вычислены Prometheus
+});
+
+const httpRequestsTotal = new prom.Counter({
+  name: "http_requests_total",
+  help: "Total number of HTTP requests",
+  labelNames: ["method", "route", "status_code"],
+});
+
+const httpErrorRate = new prom.Counter({
+  name: "http_errors_total",
+  help: "Total number of HTTP 500 responses",
+  labelNames: ["route"],
+});
+
+// Endpoint для метрик
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", prom.register.contentType);
+  res.end(await prom.register.metrics());
+});
 
 // Database configuration
 const pool = new Pool({
@@ -14,7 +45,26 @@ const pool = new Pool({
   port: 5432,
 });
 
-// Routes
+
+// Middleware для метрик
+app.use((req, res, next) => {
+  const end = httpRequestDurationMicroseconds.startTimer();
+  res.on("finish", () => {
+    const { method, path: route } = req;
+    const statusCode = res.statusCode;
+
+    httpRequestsTotal.inc({ method, route, status_code: statusCode });
+
+    if (statusCode === 500) {
+      httpErrorRate.inc({ route });
+    }
+
+    end({ method, route, status_code: statusCode });
+  });
+  next();
+});
+
+// ROUTES
 
 // Get all users
 app.get("/users", async (req, res) => {
@@ -80,7 +130,10 @@ app.put("/users/:id", async (req, res) => {
 app.delete("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query("DELETE FROM users WHERE id = $1 RETURNING *", [id]);
+    const result = await pool.query(
+      "DELETE FROM users WHERE id = $1 RETURNING *",
+      [id]
+    );
     if (!result.rows.length) {
       return res.status(404).json({ error: "User not found" });
     }
