@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nodejs-app
-        image: stepigor/nodejsapp:arm
+        image: stepigor/nodejsapp:latest
         ports:
         - containerPort: 8080
         env:
