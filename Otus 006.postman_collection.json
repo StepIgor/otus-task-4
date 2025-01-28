@@ -81,7 +81,6 @@
 							"console.log(\"Request URL:\", pm.request.url.toString());",
 							"console.log(\"Request Method:\", pm.request.method);",
 							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
-							"console.log(\"Request Body:\", pm.request.body.raw);",
 							"",
 							"// Логирование данных ответа",
 							"console.log(\"Response Status:\", pm.response.status);",
@@ -274,7 +273,6 @@
 							"console.log(\"Request URL:\", pm.request.url.toString());",
 							"console.log(\"Request Method:\", pm.request.method);",
 							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
-							"console.log(\"Request Body:\", pm.request.body.raw);",
 							"",
 							"// Логирование данных ответа",
 							"console.log(\"Response Status:\", pm.response.status);",
@@ -286,6 +284,13 @@
 						],
 						"type": "text/javascript",
 						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -440,7 +445,6 @@
 							"console.log(\"Request URL:\", pm.request.url.toString());",
 							"console.log(\"Request Method:\", pm.request.method);",
 							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
-							"console.log(\"Request Body:\", pm.request.body.raw);",
 							"",
 							"// Логирование данных ответа",
 							"console.log(\"Response Status:\", pm.response.status);",
@@ -537,7 +541,6 @@
 							"console.log(\"Request URL:\", pm.request.url.toString());",
 							"console.log(\"Request Method:\", pm.request.method);",
 							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
-							"console.log(\"Request Body:\", pm.request.body.raw);",
 							"",
 							"// Логирование данных ответа",
 							"console.log(\"Response Status:\", pm.response.status);",
