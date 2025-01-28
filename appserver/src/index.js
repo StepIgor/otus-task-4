@@ -2,9 +2,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { Pool } = require("pg");
 const prom = require("prom-client");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(bodyParser.json());
+
+const JWT_SECRET = process.env.JWT_SECRET || "JWTSecretSampleValue";
 
 // Prometheus
 const collectDefaultMetrics = prom.collectDefaultMetrics;
@@ -64,12 +67,63 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware для проверки JWT-токена
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+    req.user = user;
+    next();
+  });
+};
+
 // ROUTES
 
+// В РАМКАХ ЗАДАНИЯ 006, ТРЕБУЕТСЯ АВТОРИЗАЦИЯ ЧЕРЕЗ JWT-ТОКЕН
+// Получение информации о текущем пользователе
+app.get("/me", authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query("SELECT id, name, email, age FROM users WHERE id = $1", [req.user.id]);
+    if (!result.rows.length) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Обновление информации о текущем пользователе
+app.put("/me", authenticateToken, async (req, res) => {
+  try {
+    const { name, email, age } = req.body;
+    const result = await pool.query(
+      "UPDATE users SET name = $1, email = $2, age = $3 WHERE id = $4 RETURNING id, name, email, age",
+      [name, email, age, req.user.id]
+    );
+    if (!result.rows.length) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+// ДОБАВЛЯЛИСЬ РАНЕЕ, НЕ ТРЕБУЮТ АВТОРИЗАЦИИ
 // Get all users
 app.get("/users", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM users");
+    const result = await pool.query("SELECT id, email, name, age FROM users");
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -81,7 +135,7 @@ app.get("/users", async (req, res) => {
 app.get("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+    const result = await pool.query("SELECT id, email, name, age FROM users WHERE id = $1", [id]);
     if (!result.rows.length) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -95,10 +149,10 @@ app.get("/users/:id", async (req, res) => {
 // Create a new user
 app.post("/users", async (req, res) => {
   try {
-    const { name, email, age } = req.body;
+    const { name, email, age, password } = req.body;
     const result = await pool.query(
-      "INSERT INTO users (name, email, age) VALUES ($1, $2, $3) RETURNING *",
-      [name, email, age]
+      "INSERT INTO users (name, email, age, password) VALUES ($1, $2, $3, $4) RETURNING *",
+      [name, email, age, password]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -113,7 +167,7 @@ app.put("/users/:id", async (req, res) => {
     const { id } = req.params;
     const { name, email, age } = req.body;
     const result = await pool.query(
-      "UPDATE users SET name = $1, email = $2, age = $3 WHERE id = $4 RETURNING *",
+      "UPDATE users SET name = $1, email = $2, age = $3 WHERE id = $4 RETURNING id, name, email, age",
       [name, email, age, id]
     );
     if (!result.rows.length) {

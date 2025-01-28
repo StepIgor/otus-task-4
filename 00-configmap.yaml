@@ -5,3 +5,4 @@ metadata:
 data:
   DB_HOST: "postgresql.default.svc.cluster.local"
   APP_PORT: "8080"
+  AUTH_PORT: "8081"

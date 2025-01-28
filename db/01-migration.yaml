@@ -25,10 +25,11 @@ spec:
             id SERIAL PRIMARY KEY,
             name VARCHAR(100) NOT NULL,
             email VARCHAR(100) UNIQUE NOT NULL,
-            age INT NOT NULL
+            age INT NOT NULL,
+            password VARCHAR(60) NOT NULL
           );
-          INSERT INTO users (name, email, age) VALUES
-          ('Test User', 'test@example.com', 32)
+          INSERT INTO users (name, email, age, password) VALUES
+          ('Test User', 'test@example.com', 32, 'not hash')
           ON CONFLICT (email) DO NOTHING;
           "
       restartPolicy: OnFailure

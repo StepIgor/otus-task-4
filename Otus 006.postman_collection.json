@@ -1,0 +1,613 @@
+{
+	"info": {
+		"_postman_id": "7f74ef68-e511-4cb4-9ef6-2df95b32f08a",
+		"name": "Otus 006",
+		"description": "JWT прикрутил!!!",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25405563"
+	},
+	"item": [
+		{
+			"name": "Регистрация user001",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function getRandomInt(min, max) {",
+							"    min = Math.ceil(min);",
+							"    max = Math.floor(max);",
+							"    return Math.floor(Math.random() * (max - min + 1)) + min;",
+							"}",
+							"",
+							"pm.collectionVariables.set('userNum', getRandomInt(1, 100));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"user{{userNum}}\",\n    \"email\": \"user{{userNum}}@email.ru\",\n    \"age\": {{userNum}},\n    \"password\": \"pswd{{userNum}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "О себе (без входа)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/app/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Изменить О себе (без входа)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"user{{userNum}} edited\",\n    \"age\": {{userNum}},\n    \"email\": \"user{{userNum}}ed@email.ru\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/app/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Вход user001",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());",
+							"",
+							"// Парсим ответ и извлекаем токен",
+							"const responseData = pm.response.json();",
+							"const token = responseData.token;",
+							"// Сохраняем токен в переменную окружения",
+							"pm.collectionVariables.set(\"jwt_token\", token);",
+							"// Логируем токен для отладки",
+							"console.log(\"JWT Token saved:\", token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"user{{userNum}}@email.ru\",\n    \"password\": \"pswd{{userNum}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Изменение (под user001)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"user{{userNum}} edited\",\n    \"age\": {{userNum}},\n    \"email\": \"user{{userNum}}ed@email.ru\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/app/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "О себе (под user001)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());",
+							"",
+							"console.log('ПОСКОЛЬКУ ИСПОЛЬЗУЕТСЯ АВТОНОМНЫЙ ТОКЕН СО СРОКОМ ДЕЙСТВИЯ,');",
+							"console.log('ДЛЯ ИМИТАЦИИ ВЫХОДА ИЗ АККАУНТА ТОКЕН БУДЕТ \"ЗАБЫТ\" НА КЛИЕНТЕ');",
+							"pm.collectionVariables.set('jwt_token', '');"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/app/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Регистрация user002",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function getRandomInt(min, max) {",
+							"    min = Math.ceil(min);",
+							"    max = Math.floor(max);",
+							"    return Math.floor(Math.random() * (max - min + 1)) + min;",
+							"}",
+							"",
+							"pm.collectionVariables.set('userNum', getRandomInt(1, 100));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"user{{userNum}}\",\n    \"email\": \"user{{userNum}}@email.ru\",\n    \"age\": {{userNum}},\n    \"password\": \"pswd{{userNum}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Вход user002",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());",
+							"",
+							"// Парсим ответ и извлекаем токен",
+							"const responseData = pm.response.json();",
+							"const token = responseData.token;",
+							"// Сохраняем токен в переменную окружения",
+							"pm.collectionVariables.set(\"jwt_token\", token);",
+							"// Логируем токен для отладки",
+							"console.log(\"JWT Token saved:\", token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"user{{userNum}}@email.ru\",\n    \"password\": \"pswd{{userNum}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "О себе (под user002)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/app/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Изменение (под user002)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"user{{userNum}} edited\",\n    \"age\": {{userNum}},\n    \"email\": \"user{{userNum}}ed@email.ru\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/app/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "О себе (под user002)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Логирование данных запроса",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Token:\", pm.request.headers.get('Authorization'));",
+							"console.log(\"Request Body:\", pm.request.body.raw);",
+							"",
+							"// Логирование данных ответа",
+							"console.log(\"Response Status:\", pm.response.status);",
+							"console.log(\"Response Body:\", pm.response.text());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/app/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"app",
+						"me"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "arch.homework",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "null",
+			"type": "string"
+		},
+		{
+			"key": "userNum",
+			"value": "001",
+			"type": "string"
+		}
+	]
+}

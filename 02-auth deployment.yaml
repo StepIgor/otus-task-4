@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nodejs-app
+  name: authservice-deploy
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: nodejs-app
+      app: authservice-app
   template:
     metadata:
       labels:
-        app: nodejs-app
+        app: authservice-app
     spec:
       containers:
-      - name: nodejs-app
-        image: stepigor/nodejsapp:latest
+      - name: authservice-app
+        image: stepigor/authserver:arm
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
         env:
         - name: DB_HOST
           valueFrom:
             configMapKeyRef:
               name: nodejsapp-config
               key: DB_HOST
-        - name: APP_PORT
+        - name: AUTH_PORT
           valueFrom:
             configMapKeyRef:
               name: nodejsapp-config
-              key: APP_PORT
+              key: AUTH_PORT
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
